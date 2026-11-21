@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no'>
+<meta name='theme-color' content='#12151c'>
+<title>Cadena</title>
+<link rel='stylesheet' href='./style.css'>
+</head>
+<body>
+<canvas id='scene'></canvas>
+<div id='hud'>
+  <details id='panel'><summary>Control manual</summary>
+    <label>β <input id='sl-beta' type='range' min='-180' max='180' value='60'></label>
+    <label>γ <input id='sl-gamma' type='range' min='-90' max='90' value='0'></label>
+    <p>En escritorio: arrastra sobre la escena para dirigir la gravedad.</p></details>
+  <div id='status' role='status' aria-live='polite'>Sensores: …</div>
+  <button id='btn-sensors' type='button'>Activar sensores</button>
+  <div id='readout'></div>
+  <div id='hint'></div>
+</div>
+<script type='module' src='./js/main.js'></script>
+</body>
+</html>
