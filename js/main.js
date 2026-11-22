@@ -35,17 +35,23 @@ function source() {
 
 let frame = 0;
 let fpsDt = 1 / 60;
+let shake = { x: 0, y: 0 };
+let lastAccelT = sensors.state.accelT;
 
 function tick(dt) {
   dt = Math.min(dt, CONFIG.MAX_DT);
   const src = source();
   const g = src === 'sensor' ? sensors.state.gravity : fallback.state.gravity;
-  let fx = g.x * CONFIG.G_PX;
-  let fy = g.y * CONFIG.G_PX;
-  if (sensors.state.accelT > 0 && performance.now() - sensors.state.accelT < 150) {
-    fx += sensors.state.accel.x * CONFIG.ACCEL_SCALE;
-    fy += sensors.state.accel.y * CONFIG.ACCEL_SCALE;
+  if (src === 'sensor' && sensors.state.accelT !== lastAccelT) {
+    shake.x = sensors.state.accel.x;
+    shake.y = sensors.state.accel.y;
   }
+  lastAccelT = sensors.state.accelT;
+  const decay = Math.pow(0.9, dt * 60);
+  shake.x *= decay;
+  shake.y *= decay;
+  const fx = g.x * CONFIG.G_PX + shake.x * CONFIG.ACCEL_SCALE * 3;
+  const fy = g.y * CONFIG.G_PX + shake.y * CONFIG.ACCEL_SCALE * 3;
   chain.step(dt, fx, fy, { w: view.w, h: view.h });
   frame++;
 }
@@ -75,7 +81,8 @@ window.__chain = {
   get frame() { return frame; },
   get source() { return source(); },
   get gravity() { return source() === 'sensor' ? sensors.state.gravity : fallback.state.gravity; },
-  get bounds() { return { w: view.w, h: view.h }; }
+  get bounds() { return { w: view.w, h: view.h }; },
+  get shake() { return { x: shake.x, y: shake.y }; }
 };
 window.__sensors = sensors;
 window.__fallback = fallback;
